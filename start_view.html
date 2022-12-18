@@ -1,0 +1,40 @@
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <title>start menu</title>
+    <!-- Custom styles for this template -->
+    <link href="/main/start_view.css" rel="stylesheet">
+    <link href="/main/start_view.js">
+  </head>
+  
+  <body class="text-body">
+    <h1 class="title">Please sign in</h1>
+
+    <form class="text-form" action="/procexx/login">
+      <div class="login">
+        <div class="ID">
+          <label for="floatingInput">Email address</label>
+          <input type="email" class="login_sub" id="floatingInput" placeholder="name@example.com">
+      </div>
+      </div>
+      <div class="login">
+        <div class="PW">
+          <label for="floatingPassword">Password</label>
+          <input type="password" class="login_sub" id="floatingPassword" placeholder="Password">
+        </div>
+      </div>
+      <div>
+        <div class="final_check">
+          <label>
+            <input type="checkbox" value="remember-me"> Remember me
+          </label>
+          <ul>
+            <li class="sign_up>"><a href="/main/singUp.html">회원가입</a></li>
+          </ul>
+        </div>
+        <button class="BTN" type="button">Sign in</button>
+      </div>
+    </form>
+  </body>
+</html>

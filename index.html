@@ -1,9 +1,255 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-<title> index </title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+        integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+        integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <style>
+        #map {
+            height: 400px;
+            width: calc(100% - 80px);
+            margin-bottom: 20px;
+        }
+
+        td,
+        th {
+            vertical-align: middle;
+        }
+    </style>
+    <script>
+        let startPoint = null
+        let endPoint = null
+        let currentPopup = null
+        let taxiDatas = null;
+        let map = null;
+        let startMarker = null;
+        let endMarker = null;
+
+        function setStart(lat, lng) {
+            currentPopup.close()
+            let name = prompt("출발지 이름을 설정해주세요.")
+
+            if (name == null) {
+                startPoint = null;
+                return;
+            }
+            
+            startPoint = {
+                lat: lat,
+                lng: lng,
+                name: name
+            }
+        }
+
+        function setEnd(lat, lng) {
+            currentPopup.close()
+            let name = prompt("도착지 이름을 설정해주세요.")
+            if (name == null) {
+                endPoint = null;
+                return;
+            }
+            // 여기서 REST API 호출하면 됨.
+            endPoint = {
+                lat: lat,
+                lng: lng,
+                name: name
+            }
+
+            let max = parseInt(prompt("정원을 설정해주세요."))
+            let data = {
+                index: document.querySelectorAll("tbody > tr").length + 1,
+                start: startPoint,
+                end: endPoint,
+                cur: 1,
+                max: max,
+            }
+            console.log(data)
+            $.post("add", data,
+                function (data, status) {
+                    alert("Data: " + data + "\nStatus: " + status);
+                }
+            );
+
+
+
+            endPoint = null
+            startPoint = null
+
+            initTable();
+        }
+
+        function initTable() {
+            let tbody = document.querySelector("tbody")
+            tbody.innerHTML = ""
+            
+
+            $.get("get",
+                function (datas, status) {
+                    taxiDatas = datas;
+                    for (let data of datas) {
+                        let tr = document.createElement("tr")
+                        tr.innerHTML = `
+                            <th scope="row">${data?.index}</th>
+                            <td>${data.start.name}</td>
+                            <td>${data.end.name}</td>
+                            <td>
+                                <button type="button" class="btn btn-primary">
+                                    ${data.cur} / ${data.max}
+                                </button>
+                            </td>
+                        `
+                        tr.onmouseenter = () => {
+                            startMarker = L.marker([data.start.lat, data.start.lng]).addTo(map);
+                            endMarker = L.marker([data.end.lat, data.end.lng]).addTo(map);
+                        }
+                        tr.onmouseleave = () => {
+                            startMarker?.remove();
+                            endMarker?.remove();
+                        }
+                        let button = tr.querySelector("button")
+                        button.onclick = () => {
+                            if (data.cur >= data.max) {
+                                alert("정원이 찼습니다.")
+                                return;
+                            }
+                            $.post("with", {_id: data._id}, (data, status) => { })
+                            location.reload();
+                        }
+                        tbody.appendChild(tr)
+                        
+                    }
+                }
+            ); 
+        }
+
+
+
+        window.onload = () => {
+            initTable();
+            map = L.map('map').setView([37.8835, 127.73], 15)
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: ''
+            }).addTo(map)
+            map.attributionControl.setPrefix('한림대학교 정보과학대학')
+
+            map.on('contextmenu', function (e) {
+                let location = e.latlng
+                console.log(e.latlng)
+                with (location) {
+
+                    let startPopupHTML = `
+                        <div class="upload-popup">
+                            <i class="fa-solid fa-compass"></i>&nbsp;&nbsp;
+                            위도: ${lat.toFixed(6)}, 경도: ${lng.toFixed(6)}<br>
+                            <i class="fa-solid fa-table"></i>&nbsp;&nbsp;
+                            <center>
+                                <button 
+                                    type="button" class="btn btn-primary"
+                                    onclick="javascript:setStart(${lat.toFixed(6)}, ${lng.toFixed(6)});">
+                                    출발지로 설정
+                                </button>
+                            </center>
+                        </div>
+                    `
+
+                    let endPopupHTML = `
+                        <div class="upload-popup">
+                            <i class="fa-solid fa-compass"></i>&nbsp;&nbsp;
+                            위도: ${lat.toFixed(6)}, 경도: ${lng.toFixed(6)}<br>
+                            <i class="fa-solid fa-table"></i>&nbsp;&nbsp;
+                            <center>
+                                <button 
+                                    type="button" class="btn btn-primary"
+                                    onclick="javascript:setEnd(${lat.toFixed(6)}, ${lng.toFixed(6)});">
+                                    도착지로 설정 후 등록
+                                </button>
+                            </center>
+                        </div>
+                    `
+
+                    currentPopup = L.popup()
+                        .setLatLng(e.latlng)
+                        .setContent(startPoint == null ? startPopupHTML : endPopupHTML)
+                        .openOn(map)
+                }
+            });
+
+
+            
+        }
+    </script>
+
 </head>
-<body>
-<h1> hello world </h1>
-<h2> nice to meet you </h2>
+
+<body class="container d-flex flex-column min-vh-100">
+    <header
+        class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+        <a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
+            <div style="margin-left: 20px;">
+                택시 같이 타요!
+            </div>
+        </a>
+
+        <div class="col-md-3 text-end">
+            <button type="button" class="btn btn-outline-primary me-2">Login</button>
+            <button type="button" class="btn btn-primary">Sign-up</button>
+        </div>
+    </header>
+    <div id="map" class="container"></div>
+
+    <div class="container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">출발지</th>
+                    <th scope="col">도착지</th>
+                    <th scope="col">같이 타기</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">1</th>
+                    <td>춘천역</td>
+                    <td>한림대학교 구정문</td>
+                    <td><button type="button" class="btn btn-primary">1 / 4</button></td>
+                </tr>
+                <tr>
+                    <th scope="row">2</th>
+                    <td>춘천역</td>
+                    <td>한림대학교 학생생활관 8관</td>
+                    <td><button type="button" class="btn btn-primary">2 / 3</button></td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td>남춘천역</td>
+                    <td>쿠우쿠우 춘천점</td>
+                    <td><button type="button" class="btn btn-primary">2 / 3</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top mt-auto">
+        <div class="col-md-4 d-flex align-items-center">
+            <span class="mb-3 mb-md-0 text-muted" style="margin-left: 20px;">
+                한림대학교 정보과학대학
+            </span>
+        </div>
+    </footer>
 </body>
+
 </html>

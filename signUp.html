@@ -1,0 +1,43 @@
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <title> 회원가입 </title>
+    <link href="/main/signUp.css" rel="stylesheet">
+  </head>
+
+    <body>
+        <!-- 주소에 줄줄이 붙어보내면 get / 값만 모내면 post -->
+        <fieldset class="box">
+            <legend class="title"> 회원가입 </legend>
+            <ul class="signup">
+              <!-- em : 진하게, 강조 -->
+              <!-- id : lable의 for랑 연결된 부분 / name은 다른 파일로 넘겨줄 파라미터 명 -->
+              <li class="ID">
+                <label class="reg_id" for="new_id"> ID </label>
+                <input type="text" id="new_id" name="new_id" size="20" autocomplete="on" required>
+              </li>
+
+              <li>
+                <label class="reg_pw1" for="pw1"> PW </label>
+                <input type="password" id="new_pw1" name="new_pw1" size="20" required>
+              </li>
+
+              <li>
+                <label class="reg_pw2" for="pw2"> Ck </label>
+                <input type="password" id="new_pw2" name="new_pw2" size="20" required>
+              </li>
+
+              <li>
+                <label class="reg_name" for="name"> NAME </label>
+                <input type="text" id="user_name" name="user_name" size="20" required>
+              </li>
+            </ul>
+            
+            <fieldset class="sendform">
+              <p class="text">모든 항목을 다 써야합니다.</p>
+              <button type="submit" class="check"><a href="/main/main.html">회원가입</a></button>
+            </fieldset>    
+          </fieldset>
+    </body>
+</html>

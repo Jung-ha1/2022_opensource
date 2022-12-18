@@ -1,0 +1,97 @@
+.text-body {
+    width: 780px;   height: 550px;
+    margin: auto;
+    background-color: #445AF9;
+}
+
+
+
+/* 기본 배경 */
+/* 이미지 */
+.logo {
+    width: 100px;
+    height: 100px; line-height: 100px;
+    text-align: center; font-size: 20px;
+    font-weight: normal;
+}
+/* please sign in */
+.title {
+    text-align: center;
+    color: white;
+}
+
+/*  */
+.text-form {
+    width: 750px;   height: 450px;
+    background-color: #313082;
+    border-radius: 10px;
+    padding: 60px;  box-sizing: border-box;
+    margin-left: 20px;
+}
+
+
+/* 로그인 창 */
+.login{
+    width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.login label {
+    display: block;
+    font-size: 20px;    color: white;
+    margin-bottom: 10px;
+}
+.login_sub {
+    display: block;
+    width: 400px;   height: 50px;
+    margin-bottom: 25px;
+    border: none;   background-color: #ededed;
+    border-radius: 10px;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+
+/* 로그인 밑에 부분 조정 */
+/* Remember me */
+.final_check label {
+    width: 200px;
+    margin-left: 110px;
+    color: white;
+    float: left;
+}
+
+
+/* 아이디 비번 찾기 및 회원가입 */
+ul {
+    width: 300px;
+    margin-left: 300px;
+}
+li {
+    text-align:center;
+    list-style: none;
+    float: left;
+    margin-left: 10px;
+}
+/* 아이디/비번 부분 글자 조정*/
+.text-body a{
+    /* 글자관련은 보통 최종태그에 줘야 적용 */
+    color: white; font-size: 12px;
+
+    /* 현재 위치에서 상대적 이동 */
+    position: relative; top: -2px;
+}
+
+/* 로그인 버튼 */
+.BTN {
+    width: 400px;
+    height: 40px;
+    font-size: 23px;
+    font-weight: bold;
+    color: #445AF9;
+    border-color: #CDCCF8;
+    margin-top: 50px;
+    margin-left: 116px;
+
+    background-color: #CDCCF8;
+}
